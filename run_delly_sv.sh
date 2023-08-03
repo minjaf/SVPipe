@@ -1,4 +1,11 @@
-basedir="/home/venus/mar/share_pesquisa/debora_veniamin/GemeosDiscordantes_TAOS"; bams=$(find $basedir -name "*.bam");
+basedir=$1; 
+outdir=$2
+
+ext=".cram"
+fasta="$HOME/common/hg38/Homo_sapiens_assembly38.fasta"
+bl_lst="$HOME/common/hg38/human.hg38.excl.tsv"
+
+bams=$(find $basedir -name "*"$ext);
 
 set -e
 
@@ -6,25 +13,34 @@ for i in $bams
 do
     bn=$(basename $i)
     splitext=$(echo $bn | cut -d "." -f1)
-    if ! [ -f "$splitext/${splitext}.bam" ]
+    if ! [ -f "$outdir/$splitext/${splitext}$ext" ]
     then
-        ln -s $i $splitext/${splitext}.bam
+        echo "Creating simlink: $i $outdir/$splitext/${splitext}$ext"
+        ln -s $(realpath $i) $outdir/$splitext/${splitext}$ext
     fi
     
-    if [ -d "${splitext}/delly" ]
+    if [ -d "$outdir/${splitext}/delly" ]
     then
-		echo "directory exist"
-    else	
-		mkdir "${splitext}/delly"
+		  echo "delly output directory exist"
+    else
+      echo "creating directory $outdir/${splitext}/delly"	
+		  mkdir "$outdir/${splitext}/delly"
     fi
-    out=${splitext}/delly/delly.sv.vcf ;
-#    if [ -f $out ]
-#    then
-#                echo "sv results file exist, skipping $i"
-#    else
-                echo "ruinning delly sv"
+    out=$outdir/${splitext}/delly/delly.sv.vcf ;
+    if [ -f "$outdir/${splitext}/delly/.done" ]
+    then
+              echo "Skipping $i"
+    else
+              echo "ruinning delly sv"
+    fi 
 		date
-		~/soft/delly/delly/src/delly call -g ~/common/hg38/Homo_sapiens_assembly38.fasta -x ~/common/hg38/human.hg38.excl.tsv $splitext/${splitext}.bam > $out 
-        date
-#    fi 
+		~/soft/delly/delly/src/delly call \
+            -g ${fasta} \
+            -x ${bl_lst} \
+            $outdir/$splitext/${splitext}${ext} \
+            > $out \
+            2> delly_sv_logs.txt
+            
+    # echo "Done" > "$outdir/${splitext}/delly/.done"
+    date
 done
