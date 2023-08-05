@@ -11,6 +11,7 @@ set -e
 
 for i in $bams
 do
+    echo "Processing $i"
     bn=$(basename $i)
     splitext=$(echo $bn | cut -d "." -f1)
     if ! [ -f "$outdir/$splitext/${splitext}$ext" ]
@@ -39,8 +40,8 @@ do
             -x ${bl_lst} \
             $outdir/$splitext/${splitext}${ext} \
             > $out \
-            2> delly_sv_logs.txt
+            2>> delly_sv_logs.txt
             
-    # echo "Done" > "$outdir/${splitext}/delly/.done"
+    echo "Done" > "$outdir/${splitext}/delly/.done"
     date
 done
