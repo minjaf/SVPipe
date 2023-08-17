@@ -31,6 +31,7 @@ do
     if [ -f "$outdir/${splitext}/delly/.done" ]
     then
               echo "Skipping $i"
+	      continue
     else
               echo "ruinning delly sv"
     fi 
