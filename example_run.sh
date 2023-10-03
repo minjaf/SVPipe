@@ -1,7 +1,8 @@
 # create data and cue config for new cram files
+# execute from results dir
 cram_folder="/home/venus/lago/vfishman/2023Aug14_copy/";\
 results_folder="/home/venus/lago/vfishman/results";\
-for i in {110..115}; do \
+for i in {124..127}; do \
     [ ! -d "${results_folder}/i$i/" ] && mkdir -p ${results_folder}/i$i/; \
     for j in ${cram_folder}/${i}*.cram; \
         do bash create_data_and_configs.sh $j ${results_folder}/i$i/; \
@@ -18,6 +19,8 @@ for i in {117..124}; do \
     done;\
 done;
 
-bash run_cue.sh /home/vsfishman/genomes/process/i101/
+# run cur for a subset of folders
+# execute from results dir
+for i in {124..127}; do cd i$i; bash ~/soft/SVPipe/run_cue.sh .; cd ..; done
 
 /home/venus/lago/vfishman/results$ for i in {4..9}; do bash ~/soft/SVPipe/run_delly_sv.sh ~/projects/1000gSVs/results/i10${i}/ ~/projects/1000gSVs/results/i10${i}; done
